@@ -18,7 +18,7 @@ you neet to set 2 environmental variables.
 * GOARCh=386
 
 Example code to open a file (in read only mode), read the first record, and close the file.
-
+----
 func example() {
     var (
 		posblk     = make([]uint16, 160)
@@ -51,3 +51,6 @@ func example() {
     	btrieve.Release()
     }
 }
+----
+
+Hope this library helps!

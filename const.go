@@ -17,3 +17,7 @@ const (
 	B_GET_FIRST OP_CODE = 12
 	B_GET_NEXT  OP_CODE = 6
 )
+
+const (
+	MAX_KEY_SIZE = uint8(255)
+)

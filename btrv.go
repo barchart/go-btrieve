@@ -14,18 +14,44 @@ import (
 	"unsafe"
 )
 
-var keylen = uint8(255)
-
-type DB struct {
+var (
 	btrcall uintptr
 	btrvdll syscall.Handle
+)
+
+// Init loads the dll and finds the pointer to the
+// BTRCALL function. Call this once before calling
+// BTRV.
+func Init() error {
+	var err error
+	btrvdll, err = syscall.LoadLibrary("WBTRV32.DLL")
+	if err != nil {
+		return err
+	}
+
+	btrcall, err = syscall.GetProcAddress(btrvdll, "BTRCALL@28")
+	if err != nil {
+		syscall.FreeLibrary(btrvdll)
+		return err
+	}
+
+	return nil
 }
 
 // BTRV is the golang equivalent of the BTRV call in the
 // Btrieve C API.
-func (db *DB) BTRV(op OP_CODE, posBlock []uint16, dataBuffer []byte, dataLength uint32, keyBuffer []byte, keyNumber int8) uint16 {
+func BTRV(op OP_CODE, posBlock []uint16, dataBuffer []byte, dataLength uint32, keyBuffer []byte, keyNumber int8) (uint16, error) {
+	if btrcall == 0 {
+		err := Init()
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	var keylen = MAX_KEY_SIZE
+
 	status, _, _ := syscall.Syscall9(
-		db.btrcall,
+		btrcall,
 		7,
 		uintptr(op),
 		uintptr(unsafe.Pointer(&posBlock[0])),
@@ -37,33 +63,11 @@ func (db *DB) BTRV(op OP_CODE, posBlock []uint16, dataBuffer []byte, dataLength 
 		0,
 		0)
 
-	return uint16(status)
+	return uint16(status), nil
 }
 
-// InitDB is called to initalize the dll and create
-// a placeholder for the db structure.
-func InitDB() (*DB, error) {
-	var (
-		db  DB
-		err error
-	)
-
-	db.btrvdll, err = syscall.LoadLibrary("WBTRV32.DLL")
-	if err != nil {
-		return nil, err
-	}
-
-	db.btrcall, err = syscall.GetProcAddress(db.btrvdll, "BTRCALL@28")
-	if err != nil {
-		syscall.FreeLibrary(db.btrvdll)
-		return nil, err
-	}
-
-	return &db, nil
-}
-
-// ReleaseDB releases the dll and the resources associtated
-// with the dll.
-func ReleaseDB(db *DB) {
-	syscall.FreeLibrary(db.btrvdll)
+// Release releases the dll and the resources associtated
+// with the dll. Call this once at the end of your program.
+func Release() {
+	syscall.FreeLibrary(btrvdll)
 }

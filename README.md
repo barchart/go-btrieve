@@ -18,9 +18,10 @@ you neet to set 2 environmental variables.
 * GOARCh=386
 
 Example code to open a file (in read only mode), read the first record, and close the file.
-----
+
+```
 func example() {
-    var (
+	var (
 		posblk     = make([]uint16, 160)
 		dataBuffer = make([]byte, 256)
 		dataLength = uint32(len(dataBuffer))
@@ -28,7 +29,7 @@ func example() {
 		keyBuffer  = make([]byte, 255)
 		keyNumber  = int8(-2) // read only mode
 		ist        uint16
-	)
+    	)
 
 	ist, err = btrieve.BTRV(btrieve.B_OPEN, posblk, dataBuffer, dataLength, dbfile, keyNumber)
 	if err != nil {
@@ -41,16 +42,16 @@ func example() {
 		keyNumber = int8(0)
 		ist, _ = btrieve.BTRV(btrieve.B_GET_FIRST, posblk, dataBuffer, dataLength, keyBuffer, keyNumber)
 		fmt.Println("KEY", string(keyBuffer))
-        fmt.Println("DATA", string(dataBuffer))
+        	fmt.Println("DATA", string(dataBuffer))
 
-    	ist, _ = btrieve.BTRV(btrieve.B_CLOSE, posblk, dataBuffer, dataLength, dbfile, keyNumber)
-    	if ist != 0 {
-	    	log.Printf("Error closing %s. %s", string(dbfile), err.Error())
-	    }
+    		ist, _ = btrieve.BTRV(btrieve.B_CLOSE, posblk, dataBuffer, dataLength, dbfile, keyNumber)
+    		if ist != 0 {
+	    		log.Printf("Error closing %s. %s", string(dbfile), err.Error())
+	    	}
 
-    	btrieve.Release()
-    }
+    		btrieve.Release()
+	}
 }
-----
+```
 
 Hope this library helps!

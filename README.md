@@ -20,7 +20,7 @@ func example() {
 		posblk     = make([]uint16, 160)
 		dataBuffer = make([]byte, 256)
 		dataLength = uint32(len(dataBuffer))
-		dbfile     = []byte((`file.dat` + "\x00")
+		dbfile     = []byte(`file.dat` + "\x00")
 		keyBuffer  = make([]byte, 255)
 		keyNumber  = int8(-2) // read only mode
 		ist        uint16

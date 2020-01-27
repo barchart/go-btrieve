@@ -1,6 +1,6 @@
 # go-btrieve
-Btrieve library for go
-======================
+Btrieve / Actian Zen / PSQL library for go
+==========================================
 
 Notes:
 ------

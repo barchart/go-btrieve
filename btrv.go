@@ -10,6 +10,8 @@
 package btrieve
 
 import (
+	"errors"
+	"runtime"
 	"syscall"
 	"unsafe"
 )
@@ -23,16 +25,39 @@ var (
 // BTRCALL function. Call this once before calling
 // BTRV.
 func Init() error {
-	var err error
-	btrvdll, err = syscall.LoadLibrary("WBTRV32.DLL")
-	if err != nil {
-		return err
+	if runtime.GOOS != "windows" {
+		return errors.New("Unsupported OS. Only windows is supported.")
 	}
 
-	btrcall, err = syscall.GetProcAddress(btrvdll, "BTRCALL@28")
-	if err != nil {
-		syscall.FreeLibrary(btrvdll)
-		return err
+	var err error
+
+	switch runtime.GOARCH {
+	case "386":
+		btrvdll, err = syscall.LoadLibrary("WBTRV32.DLL")
+		if err != nil {
+			return err
+		}
+
+		btrcall, err = syscall.GetProcAddress(btrvdll, "BTRCALL@28")
+		if err != nil {
+			syscall.FreeLibrary(btrvdll)
+			return err
+		}
+
+	case "amd64":
+		btrvdll, err = syscall.LoadLibrary("w64btrv.dll")
+		if err != nil {
+			return err
+		}
+
+		btrcall, err = syscall.GetProcAddress(btrvdll, "BTRCALL")
+		if err != nil {
+			syscall.FreeLibrary(btrvdll)
+			return err
+		}
+
+	default:
+		return errors.New("Unsupported architecture. Only 386 and amd64 are supported.")
 	}
 
 	return nil

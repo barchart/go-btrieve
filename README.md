@@ -7,9 +7,11 @@ Notes:
 This library will be updated, over time, as needed. While it is currently not fully complete (by far), it does offer the
 critical pieces needed to open and access a Btrieve file on a Windows system.
 
-The library supports both Windows 32-bit (WBTRV32.DLL) and Windows 64-bit (w64btrv.dll) architectures. It has been tested with PSQL 9, PSQL 11, Zen 13, and Zen 14.
+The library supports both Windows 32-bit (WBTRV32.DLL) and Windows 64-bit (w64btrv.dll) architectures. It has been tested with PSQL 9, PSQL 11, Zen 13 - 15. So it _seems_ to work with all versions. 
 
-Please note that 64-bit binaries **cannot** load 32-bit DLLs and vice-versa. If you need to deploy to a 32-bit system, you must first build the program. Also note that as of go v 12, there seems to be a bug where the 32-bit exe does not properly work on older (Windows 2k3, etc.) systems, but these exe's do seem to work on later versions, such as Win2k19. To set the OS and architecture targets, you must set 2 environmental variables.
+Please note that 32-bin binaries __cannot__ load the 64-bit dll, and vice-versa. If you need to deploy to a 32-bit system, you must first build the program. Also note that as of go version 12, there _seems_ to be a bug where the 32-bit exe does not properly work on older (Windows 2k3, etc.) systems, but these exe's do seem to work on later versions, such as Win2k19. This is regardless of the build OS source.
+
+To set the OS and architecture targets, you must set 2 environmental variables.
 * GOOS=Windows
 * GOARCH=386
 
